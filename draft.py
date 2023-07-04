@@ -41,11 +41,11 @@ ax_tar_resolation = plt.axes([0.15, ax_position_height, 0.65, 0.03])  # 目标�
 ax_position_height -= 0.05
 
 
-sli_a_0 = Slider(ax_a_0, "0", 40, 100, valinit=60)
+sli_a_0 = Slider(ax_a_0, "0", 40, 300, valinit=80)
 sli_alpha = Slider(ax_alpha, "alpha", 10, 40, valinit=30)
 sli_tar_mea_range = Slider(ax_tar_mea_range, "tar_mea_range", 10, 100, valinit=1)
 sli_min_pixel_num_resolation = Slider(
-    ax_min_pixel_num_resolation, "min_pixel_num_resolation", 2, 10, valinit=2
+    ax_min_pixel_num_resolation, "min_pixel_num_resolation", 2, 10, valinit=2, valstep=1
 )
 sli_pixel_num_CCD_L = Slider(
     ax_pixel_num_CCD_L, "pixel_num_CCD_L", 150, 500, valinit=1 / 0.00525
@@ -151,20 +151,20 @@ def update_x_y(x, a_0, b_0, alpha, beta):
     ax1.plot(x, y)
     # 起始点横坐标
     ax1.plot([xy_start_point[0], xy_start_point[0]], [y[0], xy_start_point[1]], "r--")
-    ax1.text(xy_start_point[0], y[0], xy_start_point[0], color="r")
+    ax1.text(xy_start_point[0], y[0], format(xy_start_point[0], ".2f"), color="r")
     # 起始点纵坐标
     ax1.plot(
         [x[0], xy_start_point[0]],
         [xy_start_point[1], xy_start_point[1]],
         "r--",
     )
-    ax1.text(x[0], xy_start_point[1], xy_start_point[1], color="r")
+    ax1.text(x[0], xy_start_point[1], format(xy_start_point[1], ".2f"), color="r")
     # 终点横坐标
     ax1.plot([xy_end_point[0], xy_end_point[0]], [y[0], xy_end_point[1]], "r--")
-    ax1.text(xy_end_point[0], y[0], xy_end_point[0], color="r")
+    ax1.text(xy_end_point[0], y[0], format(xy_end_point[0], ".2f"), color="r")
     # 终点纵坐标
     ax1.plot([x[0], xy_end_point[0]], [xy_end_point[1], xy_end_point[1]], "r--")
-    ax1.text(x[0], xy_end_point[1], xy_end_point[1], color="r")
+    ax1.text(x[0], xy_end_point[1], format(xy_end_point[1], ".2f"), color="r")
 
 
 def update_x_theta(x, a_0, b_0, alpha, beta):
@@ -219,26 +219,31 @@ def update_x_theta(x, a_0, b_0, alpha, beta):
         [theta[0], xtheta_start_point[1]],
         "r--",
     )
-    ax2.text(xtheta_start_point[0], theta[0], xtheta_start_point[0], color="r")
+    ax2.text(
+        xtheta_start_point[0], theta[0], format(xtheta_start_point[0], ".2f"), color="r"
+    )
     # 起始点纵坐标
     ax2.plot(
         [x[0], xtheta_start_point[0]],
         [xtheta_start_point[1], xtheta_start_point[1]],
         "r--",
     )
-    ax2.text(x[0], xtheta_start_point[1], xtheta_start_point[1], color="r")
+    ax2.text(
+        x[0], xtheta_start_point[1], format(xtheta_start_point[1], ".2f"), color="r"
+    )
     # 终点横坐标
     ax2.plot(
         [xtheta_end_point[0], xtheta_end_point[0]],
         [theta[0], xtheta_end_point[1]],
         "r--",
     )
-    ax2.text(xtheta_end_point[0], theta[0], xtheta_end_point[0], color="r")
-    # 终点纵坐标
+    ax2.text(
+        xtheta_end_point[0], theta[0], format(xtheta_end_point[0], ".2f"), color="r"
+    )
     ax2.plot(
         [x[0], xtheta_end_point[0]], [xtheta_end_point[1], xtheta_end_point[1]], "r--"
     )
-    ax2.text(x[0], xtheta_end_point[1], xtheta_end_point[1], color="r")
+    ax2.text(x[0], xtheta_end_point[1], format(xtheta_end_point[1], ".2f"), color="r")
 
 
 # y = x * b_0 * np.sin(alpha) / (a_0 * np.sin(beta) - x * np.sin(alpha + beta))
