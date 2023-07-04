@@ -41,7 +41,7 @@ ax_tar_resolation = plt.axes([0.15, ax_position_height, 0.65, 0.03])  # 目标�
 ax_position_height -= 0.05
 
 
-sli_a_0 = Slider(ax_a_0, "a_0", 40, 100, valinit=60)
+sli_a_0 = Slider(ax_a_0, "0", 40, 100, valinit=60)
 sli_alpha = Slider(ax_alpha, "alpha", 10, 40, valinit=30)
 sli_tar_mea_range = Slider(ax_tar_mea_range, "tar_mea_range", 10, 100, valinit=1)
 sli_min_pixel_num_resolation = Slider(
