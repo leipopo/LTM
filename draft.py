@@ -6,7 +6,7 @@ from scipy.optimize import root
 
 pixel_num_resolation_min = 2
 pixel_num_resolation_max = 3
-ax_position_height = 0.4
+ax_position_height = 0.45
 
 interval = 50  # ms, time between animation frames
 fig, (ax1, ax2) = plt.subplots(2, figsize=(12, 12))
@@ -22,6 +22,9 @@ ax_a_0 = plt.axes([0.15, ax_position_height, 0.65, 0.03])  # a0长度用于设�
 ax_position_height -= 0.05
 
 ax_alpha = plt.axes([0.15, ax_position_height, 0.65, 0.03])  # alpha角度用于设计机械尺寸
+ax_position_height -= 0.05
+
+ax_gamma = plt.axes([0.15, ax_position_height, 0.65, 0.03])  # gamma角度用于设计机械尺寸
 ax_position_height -= 0.05
 
 ax_tar_mea_range = plt.axes([0.15, ax_position_height, 0.65, 0.03])  # 测量范围，甲方要求
@@ -41,7 +44,7 @@ ax_tar_resolation = plt.axes([0.15, ax_position_height, 0.65, 0.03])  # 目标�
 ax_position_height -= 0.05
 
 
-sli_a_0 = Slider(ax_a_0, "0", 40, 300, valinit=80)
+sli_a_0 = Slider(ax_a_0, "a_0", 40, 300, valinit=80)
 sli_alpha = Slider(ax_alpha, "alpha", 10, 40, valinit=30)
 sli_tar_mea_range = Slider(ax_tar_mea_range, "tar_mea_range", 10, 100, valinit=1)
 sli_min_pixel_num_resolation = Slider(
@@ -55,9 +58,41 @@ sli_tar_resolation = Slider(
 )
 
 
+def f_pregamma(x):
+    # print(sli_a_0.val)
+    # print(sli_alpha.val)
+    # print(sli_tar_mea_range.val)
+    return sli_tar_mea_range.val / np.sin(x) - sli_a_0.val / np.sin(
+        (180 - sli_alpha.val) / 180 * np.pi - x
+    )
+
+
+def calc_pregamma():
+    # out = root(f_gamma, np.pi / 2).x
+    # for i in out:
+    #     print(i)
+    # print(root(f_pregamma, np.pi / 16).x / np.pi * 180)
+    return root(f_pregamma, np.pi / 16).x
+
+
+pregamma = calc_pregamma()
+# print(pregamma)
+# print(pregamma / np.pi * 180)
+
+
+def calc_gamma():
+    return np.pi / 2 - calc_pregamma() / 2
+
+
+gamma = calc_gamma().item()
+
+sli_gamma = Slider(ax_gamma, "gamma", 0, 90, valinit=90)
+
+
 def update(val):
     a_0 = sli_a_0.val
     alpha = sli_alpha.val / 360 * 2 * np.pi
+    gamma = sli_gamma.val / 360 * 2 * np.pi
     tar_mea_range = sli_tar_mea_range.val
     min_pixel_num_resolation = sli_min_pixel_num_resolation.val
     CCD_L_pixel_num = sli_pixel_num_CCD_L.val
@@ -66,11 +101,11 @@ def update(val):
 
 sli_a_0.on_changed(update)
 sli_alpha.on_changed(update)
+sli_gamma.on_changed(update)
 sli_tar_mea_range.on_changed(update)
 sli_min_pixel_num_resolation.on_changed(update)
 sli_pixel_num_CCD_L.on_changed(update)
 sli_tar_resolation.on_changed(update)
-
 
 resetax = plt.axes([0.8, 0.025, 0.1, 0.04])
 reset_button = Button(resetax, "Reset", color="yellow", hovercolor="0.975")
@@ -89,17 +124,18 @@ reset_button.on_clicked(reset)
 
 
 def calc_theta_min(ccd_l_pixel_num, min_pixel_num_resolation, tar_resolation):
+    print(1 / ccd_l_pixel_num * min_pixel_num_resolation / tar_resolation)
     return 1 / ccd_l_pixel_num * min_pixel_num_resolation / tar_resolation
 
 
-def f_beta(x, theta_min, alpha):
-    return theta_min * np.cos(alpha) / np.square(np.sin(alpha)) - np.cos(x) / (
-        1 - np.square(np.cos(x))
-    )
+def f_beta(x, theta_min, alpha, gamma):
+    return theta_min * np.square(np.sin(x)) * np.sin(gamma - alpha) - np.square(
+        np.sin(alpha)
+    ) * np.sin(gamma + x)
 
 
-def calc_beta(theta_min, alpha):
-    return root(f_beta, 30 / 360 * 2 * np.pi, args=(theta_min, alpha)).x
+def calc_beta(theta_min, alpha, gamma):
+    return root(f_beta, 40 / 360 * 2 * np.pi, args=(theta_min, alpha, gamma)).x
 
 
 # beta= root(f_beta, 30 / 360 * 2 * np.pi).x
@@ -108,8 +144,14 @@ def calc_beta(theta_min, alpha):
 # a_0 = 60
 
 
-def calc_b_0(a_0, alpha, beta):
-    return a_0 * np.tan(alpha) / np.tan(beta)
+def calc_b_0(a_0, alpha, beta, gamma):
+    return (
+        a_0
+        * np.sin(alpha)
+        * np.sin(beta + gamma)
+        / np.sin(gamma - alpha)
+        / np.sin(beta)
+    )
 
 
 def calc_focal_length(a_0, b_0):
@@ -281,6 +323,8 @@ def update_text(a_0, b_0, alpha, beta, focal_length):
 def animate(frame):
     a_0 = sli_a_0.val
     alpha = sli_alpha.val / 360 * 2 * np.pi
+    gamma = sli_gamma.val / 360 * 2 * np.pi
+
     beta = calc_beta(
         calc_theta_min(
             sli_pixel_num_CCD_L.val,
@@ -288,8 +332,22 @@ def animate(frame):
             sli_tar_resolation.val,
         ),
         alpha,
+        gamma,
     ).item()
-    b_0 = calc_b_0(sli_a_0.val, alpha, beta).item()
+
+    # beta1 = calc_beta(
+    #     calc_theta_min(
+    #         sli_pixel_num_CCD_L.val,
+    #         sli_min_pixel_num_resolation.val,
+    #         sli_tar_resolation.val,
+    #     ),
+    #     alpha,
+    #     gamma,
+    # )
+    # print(beta1)
+    # print(beta1 / 2 / np.pi * 360)
+
+    b_0 = calc_b_0(sli_a_0.val, alpha, beta, gamma).item()
     # print(b_0)
     x = np.linspace(-0.2 * sli_tar_mea_range.val, 1.2 * sli_tar_mea_range.val, 1000)
     focal_length = calc_focal_length(a_0, b_0)
