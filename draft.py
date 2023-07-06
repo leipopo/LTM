@@ -59,25 +59,16 @@ sli_tar_resolation = Slider(
 
 
 def f_pregamma(x):
-    # print(sli_a_0.val)
-    # print(sli_alpha.val)
-    # print(sli_tar_mea_range.val)
     return sli_tar_mea_range.val / np.sin(x) - sli_a_0.val / np.sin(
         (180 - sli_alpha.val) / 180 * np.pi - x
     )
 
 
 def calc_pregamma():
-    # out = root(f_gamma, np.pi / 2).x
-    # for i in out:
-    #     print(i)
-    # print(root(f_pregamma, np.pi / 16).x / np.pi * 180)
     return root(f_pregamma, np.pi / 16).x
 
 
-pregamma = calc_pregamma()
-# print(pregamma)
-# print(pregamma / np.pi * 180)
+# pregamma = calc_pregamma()
 
 
 def calc_gamma():
@@ -86,7 +77,7 @@ def calc_gamma():
 
 gamma = calc_gamma().item()
 
-sli_gamma = Slider(ax_gamma, "gamma", 0, 90, valinit=90)
+sli_gamma = Slider(ax_gamma, "gamma", 0, 90, valinit=gamma / np.pi * 180)
 
 
 def update(val):
@@ -124,7 +115,6 @@ reset_button.on_clicked(reset)
 
 
 def calc_theta_min(ccd_l_pixel_num, min_pixel_num_resolation, tar_resolation):
-    print(1 / ccd_l_pixel_num * min_pixel_num_resolation / tar_resolation)
     return 1 / ccd_l_pixel_num * min_pixel_num_resolation / tar_resolation
 
 
