@@ -8,6 +8,7 @@ pixel_num_resolation_min = 2
 pixel_num_resolation_max = 3
 ax_position_height = 0.45
 
+# 定义各坐标轴
 interval = 50  # ms, time between animation frames
 fig, (ax1, ax2) = plt.subplots(2, figsize=(12, 12))
 
@@ -43,7 +44,7 @@ ax_position_height -= 0.05
 ax_tar_resolation = plt.axes([0.15, ax_position_height, 0.65, 0.03])  # 目标分辨率，甲方要求
 ax_position_height -= 0.05
 
-
+# 创建滑动条
 sli_a_0 = Slider(ax_a_0, "a_0", 40, 300, valinit=80)
 sli_alpha = Slider(ax_alpha, "alpha", 10, 40, valinit=30)
 sli_tar_mea_range = Slider(ax_tar_mea_range, "tar_mea_range", 10, 100, valinit=1)
@@ -58,6 +59,7 @@ sli_tar_resolation = Slider(
 )
 
 
+# 计算gamma
 def f_pregamma(x):
     return sli_tar_mea_range.val / np.sin(x) - sli_a_0.val / np.sin(
         (180 - sli_alpha.val) / 180 * np.pi - x
@@ -69,17 +71,15 @@ def calc_pregamma():
 
 
 # pregamma = calc_pregamma()
-
-
 def calc_gamma():
     return np.pi / 2 - calc_pregamma() / 2
 
 
 gamma = calc_gamma().item()
-
 sli_gamma = Slider(ax_gamma, "gamma", 0, 90, valinit=gamma / np.pi * 180)
 
 
+# 进度条更新和resset'按钮
 def update(val):
     a_0 = sli_a_0.val
     alpha = sli_alpha.val / 360 * 2 * np.pi
@@ -109,15 +109,18 @@ def reset(event):
     sli_min_pixel_num_resolation.reset()
     sli_tar_mea_range.reset()
     sli_tar_resolation.reset()
+    sli_gamma.reset()
 
 
 reset_button.on_clicked(reset)
 
 
+# 计算theta_min
 def calc_theta_min(ccd_l_pixel_num, min_pixel_num_resolation, tar_resolation):
     return 1 / ccd_l_pixel_num * min_pixel_num_resolation / tar_resolation
 
 
+# 计算beta
 def f_beta(x, theta_min, alpha, gamma):
     return theta_min * np.square(np.sin(x)) * np.sin(gamma - alpha) - np.square(
         np.sin(alpha)
@@ -134,6 +137,7 @@ def calc_beta(theta_min, alpha, gamma):
 # a_0 = 60
 
 
+# 计算b_0
 def calc_b_0(a_0, alpha, beta, gamma):
     return (
         a_0
@@ -144,6 +148,7 @@ def calc_b_0(a_0, alpha, beta, gamma):
     )
 
 
+# 计算焦距
 def calc_focal_length(a_0, b_0):
     return a_0 * b_0 / (a_0 + b_0)
 
@@ -153,6 +158,7 @@ def calc_focal_length(a_0, b_0):
 # y=1*x*np.sin(np.pi/4)/(1*np.sin(np.pi/4)-x*np.sin(np.pi/2))
 
 
+# 更新x,y
 def update_x_y(x, a_0, b_0, alpha, beta):
     y = x * b_0 * np.sin(alpha) / (a_0 * np.sin(beta) - x * np.sin(alpha + beta))
     xy_start_point = (0, 0)
@@ -199,6 +205,7 @@ def update_x_y(x, a_0, b_0, alpha, beta):
     ax1.text(x[0], xy_end_point[1], format(xy_end_point[1], ".2f"), color="r")
 
 
+# 更新x,theta
 def update_x_theta(x, a_0, b_0, alpha, beta):
     theta = (
         a_0
@@ -283,6 +290,7 @@ def update_x_theta(x, a_0, b_0, alpha, beta):
 # focal_length = a_0 * b_0 / (a_0 + b_0)
 
 
+# 更新文本
 def update_text(a_0, b_0, alpha, beta, focal_length):
     text_num = 5 - 1
 
@@ -325,18 +333,6 @@ def animate(frame):
         gamma,
     ).item()
 
-    # beta1 = calc_beta(
-    #     calc_theta_min(
-    #         sli_pixel_num_CCD_L.val,
-    #         sli_min_pixel_num_resolation.val,
-    #         sli_tar_resolation.val,
-    #     ),
-    #     alpha,
-    #     gamma,
-    # )
-    # print(beta1)
-    # print(beta1 / 2 / np.pi * 360)
-
     b_0 = calc_b_0(sli_a_0.val, alpha, beta, gamma).item()
     # print(b_0)
     x = np.linspace(-0.2 * sli_tar_mea_range.val, 1.2 * sli_tar_mea_range.val, 1000)
@@ -349,6 +345,5 @@ def animate(frame):
 
 
 ani = animation.FuncAnimation(fig, animate, interval)
-
 
 plt.show()
