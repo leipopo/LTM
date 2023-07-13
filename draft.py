@@ -45,11 +45,13 @@ ax_tar_resolation = plt.axes([0.15, ax_position_height, 0.65, 0.03])  # 目标�
 ax_position_height -= 0.05
 
 # 创建滑动条
-sli_a_0 = Slider(ax_a_0, "a_0", 40, 300, valinit=80)
-sli_alpha = Slider(ax_alpha, "alpha", 10, 40, valinit=30)
-sli_tar_mea_range = Slider(ax_tar_mea_range, "tar_mea_range", 10, 100, valinit=1)
+sli_a_0 = Slider(ax_a_0, "a_0", 20, 300, valinit=40)
+sli_alpha = Slider(ax_alpha, "alpha", 30, 40, valinit=35)
+sli_tar_mea_range = Slider(
+    ax_tar_mea_range, "tar_mea_range", 1, 100, valinit=6, valstep=0.5
+)
 sli_min_pixel_num_resolation = Slider(
-    ax_min_pixel_num_resolation, "min_pixel_num_resolation", 2, 10, valinit=2, valstep=1
+    ax_min_pixel_num_resolation, "min_pixel_num_resolation", 2, 10, valinit=3, valstep=1
 )
 sli_pixel_num_CCD_L = Slider(
     ax_pixel_num_CCD_L, "pixel_num_CCD_L", 150, 500, valinit=1 / 0.00525
@@ -76,7 +78,7 @@ def calc_gamma():
 
 
 gamma = calc_gamma().item()
-sli_gamma = Slider(ax_gamma, "gamma", 0, 90, valinit=gamma / np.pi * 180)
+sli_gamma = Slider(ax_gamma, "gamma", 0, 90, valinit=68.1, valstep=0.01)
 
 
 # 进度条更新和resset'按钮
