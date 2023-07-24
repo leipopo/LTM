@@ -44,32 +44,32 @@ ax_IIR.set_position([0.55, 0.65, 0.4, 0.3])
 ax_convol.set_position([0.05, 0.3, 0.4, 0.3])
 ax_diff.set_position([0.55, 0.3, 0.4, 0.3])
 
-ax_diff_sli = plt.axes([0.1, 0.05, 0.8, 0.03])
+# ax_diff_sli = plt.axes([0.1, 0.05, 0.8, 0.03])
 ax_steplen = plt.axes([0.1, 0.1, 0.8, 0.03])
-ax_lowpass = plt.axes([0.1, 0.15, 0.8, 0.03])
+# ax_lowpass = plt.axes([0.1, 0.15, 0.8, 0.03])
 ax_highpass = plt.axes([0.1, 0.2, 0.8, 0.03])
 
-sli_diff = Slider(ax_diff_sli, "diff", 1, 3, valinit=1, valstep=1)
+# sli_diff = Slider(ax_diff_sli, "diff", 1, 3, valinit=1, valstep=1)
 sli_steplen = Slider(ax_steplen, "steplen", 1, 10000, valinit=300, valstep=1)
-sli_lowpass = Slider(
-    ax_lowpass, "lowpass", 0.0001, 0.9999, valinit=0.0001, valstep=0.00005
-)
+# sli_lowpass = Slider(
+#     ax_lowpass, "lowpass", 0.0001, 0.9999, valinit=0.0001, valstep=0.00005
+# )
 sli_highpass = Slider(
     ax_highpass, "highpass", 0.0001, 0.9999, valinit=0.005, valstep=0.00005
 )
 
 
 def update(val):
-    diff = sli_diff.val
+    # diff = sli_diff.val
     steplen = sli_steplen.val
-    lowpass = sli_lowpass.val
+    # lowpass = sli_lowpass.val
     highpass = sli_highpass.val
 
 
-sli_diff.on_changed(update)
+# sli_diff.on_changed(update)
 sli_steplen.on_changed(update)
 sli_highpass.on_changed(update)
-sli_lowpass.on_changed(update)
+# sli_lowpass.on_changed(update)
 
 
 def animate(i):
@@ -78,17 +78,17 @@ def animate(i):
     ax_IIR.clear()
     ax_diff.clear()
 
-    lowpass = sli_lowpass.val
+    # lowpass = sli_lowpass.val
     highpass = sli_highpass.val
-    if lowpass >= highpass:
-        highpass = lowpass + 0.0001
+    # if lowpass >= highpass:
+    #     highpass = lowpass + 0.0001
     steplen = sli_steplen.val
-    diff = sli_diff.val
+    # diff = sli_diff.val
 
     ax_orig.plot(result)
     ax_orig.set_title("Original signal")
 
-    b, a = signal.iirfilter(2, [lowpass, highpass], btype="bandpass")
+    b, a = signal.iirfilter(2, highpass, btype="lowpass")
     IIR_result = signal.filtfilt(b, a, result)
     ax_IIR.plot(IIR_result)
     ax_IIR.set_title("IIR signal")
@@ -100,11 +100,14 @@ def animate(i):
     ax_convol.plot(convolved_data)
     ax_convol.set_title("Convolved signal")
 
-    diff_data = np.diff(convolved_data, diff)
+    diff_data = np.diff(convolved_data)
     zeropoint = []
     for i in range(0, len(diff_data)):
-        if np.abs(diff_data[i] - 0) < 0.01:
-            zeropoint.append(i)
+        if np.abs(diff_data[i] - 0) < 0.1:
+            if len(zeropoint) == 0:
+                zeropoint.append(i)
+            elif np.abs(i - zeropoint[0]) > 10:
+                zeropoint.append(i)
             if len(zeropoint) > 1:
                 break
             else:
