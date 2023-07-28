@@ -19,29 +19,29 @@ ax_text = plt.axes([0.15, ax_position_height, 0.65, 0.03])
 ax_text.axis("off")
 ax_position_height -= 0.05
 
-ax_a_0 = plt.axes([0.15, ax_position_height, 0.65, 0.03])  # a0长度用于设计机械尺寸
+ax_a_0 = plt.axes([0.2, ax_position_height, 0.65, 0.03])  # a0长度用于设计机械尺寸
 ax_position_height -= 0.05
 
-ax_alpha = plt.axes([0.15, ax_position_height, 0.65, 0.03])  # alpha角度用于设计机械尺寸
+ax_alpha = plt.axes([0.2, ax_position_height, 0.65, 0.03])  # alpha角度用于设计机械尺寸
 ax_position_height -= 0.05
 
-ax_gamma = plt.axes([0.15, ax_position_height, 0.65, 0.03])  # gamma角度用于设计机械尺寸
+ax_gamma = plt.axes([0.2, ax_position_height, 0.65, 0.03])  # gamma角度用于设计机械尺寸
 ax_position_height -= 0.05
 
-ax_tar_mea_range = plt.axes([0.15, ax_position_height, 0.65, 0.03])  # 测量范围，甲方要求
+ax_tar_mea_range = plt.axes([0.2, ax_position_height, 0.65, 0.03])  # 测量范围，甲方要求
 ax_position_height -= 0.05
 
 ax_min_pixel_num_resolation = plt.axes(
-    [0.15, ax_position_height, 0.65, 0.03]
+    [0.2, ax_position_height, 0.65, 0.03]
 )  # 每分辨率最小像素数，算法要求
 ax_position_height -= 0.05
 
 ax_pixel_num_CCD_L = plt.axes(
-    [0.15, ax_position_height, 0.65, 0.03]
+    [0.2, ax_position_height, 0.65, 0.03]
 )  # 像素密度，甲方要求成本控制 (个像素/mm)
 ax_position_height -= 0.05
 
-ax_tar_resolation = plt.axes([0.15, ax_position_height, 0.65, 0.03])  # 目标分辨率，甲方要求
+ax_tar_resolation = plt.axes([0.2, ax_position_height, 0.65, 0.03])  # 目标分辨率，甲方要求
 ax_position_height -= 0.05
 
 # 创建滑动条
