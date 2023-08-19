@@ -91,30 +91,29 @@ ax_iir.set_position([0.05, 0.3, 0.4, 0.3])
 ax_KF.set_position([0.55, 0.3, 0.4, 0.3])
 
 
-ax_highpass = plt.axes([0.1, 0.2, 0.8, 0.03])
+# ax_highpass = plt.axes([0.1, 0.2, 0.8, 0.03])
+ax_lowpass = plt.axes([0.1, 0.2, 0.8, 0.03])
 ax_KF_Q = plt.axes([0.1, 0.15, 0.8, 0.03])
 ax_KF_R = plt.axes([0.1, 0.1, 0.8, 0.03])
 ax_text = plt.axes([0.1, 0.05, 0.8, 0.03])
 
-sli_KF_Q = Slider(ax_KF_Q, "KF_Q", 0.00001, 2, valinit=0.0005, valstep=0.00005)
-sli_KF_R = Slider(ax_KF_R, "KF_R", 0.00001, 20, valinit=1, valstep=0.00005)
-# sli_lowpass = Slider(
-#     ax_lowpass, "lowpass", 0.0001, 0.9999, valinit=0.0001, valstep=0.00005
+sli_KF_Q = Slider(ax_KF_Q, "KF_Q", 0.00001, 2, valinit=0.25, valstep=0.00005)
+sli_KF_R = Slider(ax_KF_R, "KF_R", 0.00001, 20, valinit=9, valstep=0.00005)
+sli_lowpass = Slider(ax_lowpass, "lowpass", 0.0001, 0.02, valinit=0.01, valstep=0.00005)
+# sli_highpass = Slider(
+#     ax_highpass, "highpass", 0.0001, 0.02, valinit=0.01, valstep=0.00005
 # )
-sli_highpass = Slider(
-    ax_highpass, "highpass", 0.0001, 0.02, valinit=0.01, valstep=0.00005
-)
 
 
 def update(val):
     KF_Q = sli_KF_Q.val
     KF_P = sli_KF_R.val
-    highpass = sli_highpass.val
+    highpass = sli_lowpass.val
 
 
 sli_KF_Q.on_changed(update)
 sli_KF_R.on_changed(update)
-sli_highpass.on_changed(update)
+sli_lowpass.on_changed(update)
 # sli_lowpass.on_changed(update)
 
 
@@ -195,8 +194,8 @@ def animate(i):
     ax_KF.clear()
     ax_text.clear()
 
-    # lowpass = sli_lowpass.val
-    highpass = sli_highpass.val
+    lowpass = sli_lowpass.val
+    # highpass = sli_highpass.val
     # if lowpass >= highpass:
     #     highpass = lowpass + 0.0001
     KF_Q = sli_KF_Q.val
@@ -210,7 +209,7 @@ def animate(i):
     ax_mcuiir.set_title("MCU IIR signal")
 
     # # IIR signal
-    b, a = signal.iirfilter(2, highpass, btype="lowpass")
+    b, a = signal.iirfilter(2, lowpass, btype="lowpass")
     print("b: " + str(b[0]) + ", " + str(b[1]) + ", " + str(b[2]))
     print("a: " + str(a[0]) + ", " + str(a[1]) + ", " + str(a[2]))
     iir_result = signal.filtfilt(b, a, result_raw)
